@@ -10,12 +10,12 @@ mongoose.connect('mongodb://localhost:27017/admission_system', {
 
 const seedData = async () => {
   try {
-    console.log('🧹 Clearing existing data...');
+    console.log('Clearing existing data...');
     await Lead.deleteMany({});
     await Counselor.deleteMany({});
     await Interaction.deleteMany({});
 
-    console.log('👥 Creating Indian counselors...');
+    console.log('Creating counselors...');
     const counselors = await Counselor.create([
       { name: 'Amit Sharma', region: 'North' },
       { name: 'Priya Reddy', region: 'South' },
@@ -23,9 +23,9 @@ const seedData = async () => {
       { name: 'Neha Verma', region: 'West' }
     ]);
 
-    console.log(`✅ Created ${counselors.length} counselors`);
+    console.log(`Created ${counselors.length} counselors`);
 
-    console.log('📋 Creating leads...');
+    console.log('Creating leads...');
     const leads = [];
     const sources = ['organic', 'ads', 'referral'];
     const statuses = ['new', 'contacted', 'demoed', 'admitted', 'rejected'];
@@ -53,9 +53,9 @@ const seedData = async () => {
       leads.push({ ...lead._doc, counselorId: counselor._id }); // Ensure counselorId is stored
     }
 
-    console.log(`✅ Created ${leads.length} leads`);
+    console.log(`Created ${leads.length} leads`);
 
-    console.log('💬 Creating interactions...');
+    console.log('Creating interactions...');
     const interactionTypes = ['call', 'demo', 'followup', 'email'];
     let totalInteractions = 0;
 
@@ -67,7 +67,7 @@ const seedData = async () => {
 
         await Interaction.create({
           leadId: lead._id,
-          counselorId: lead.counselorId, // fixed: using valid ID
+          counselorId: lead.counselorId,
           interactionType: interactionTypes[j % interactionTypes.length],
           timestamp: interactionDate,
           notes: `${interactionTypes[j % interactionTypes.length]} interaction with ${lead.name}`,
@@ -78,7 +78,7 @@ const seedData = async () => {
       }
     }
 
-    console.log(`✅ Created ${totalInteractions} interactions`);
+    console.log(`Created ${totalInteractions} interactions`);
 
     console.log('\n Sample data seeded successfully!');
     console.log('Summary:');
@@ -88,7 +88,7 @@ const seedData = async () => {
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('Error:', error.message);
     process.exit(1);
   }
 };
