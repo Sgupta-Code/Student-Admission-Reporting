@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Counselor = require('../models/Counselor');
+const { validateCounselor } = require('../middleware/validation');
 
 //create a new counselor
-router.post('/', async(req, res) => {
+router.post('/', validateCounselor, async(req, res) => {
     try{
         const counselor = new Counselor(req.body);
         await counselor.save();

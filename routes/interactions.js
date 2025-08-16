@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Interaction = require('../models/Interaction');
+const { validateInteraction } = require('../middleware/validation');
 
 // create a new interaction
-router.post('/', async(req, res) => {
+router.post('/', validateInteraction, async(req, res) => {
     try{
         const interaction = new Interaction(req.body);
         await interaction.save();
