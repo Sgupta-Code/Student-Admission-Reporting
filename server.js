@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
-
 const reportRoutes = require('./routes/reports.js');
 const leadRoutes = require('./routes/leads.js');
 const counselorRoutes = require('./routes/counselors.js');
@@ -19,6 +18,17 @@ app.use(express.json());
 mongoose.connect(process.env.MONGODB__URI || 'mongodb://localhost:27017/admission_system',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+        version: '1.0.0'
+    });
 });
 
 mongoose.connection.on('connected',() =>{
