@@ -52,24 +52,38 @@ router.get('/funnel',async (req,res) => {
 
         // Calculate conversion rates
         const totalLeads = Object.values(statusCounts).reduce((sum, count) => sum + count, 0);
+
         const conversions = {
-            'new_to_contacted': statusCounts.contacted > 0 ? 
-                ((statusCounts.contacted + statusCounts.demoed + statusCounts.admitted) / totalLeads * 100).toFixed(2) : 0,
+            'new_to_contacted': statusCounts.new > 0 ? 
+                (statusCounts.contacted / statusCounts.new * 100).toFixed(2) : 0,
             'contacted_to_demoed': statusCounts.contacted > 0 ? 
-                ((statusCounts.demoed + statusCounts.admitted) / (statusCounts.contacted + statusCounts.demoed + statusCounts.admitted) * 100).toFixed(2) : 0,
+                (statusCounts.demoed / statusCounts.contacted * 100).toFixed(2) : 0,
             'demoed_to_admitted': statusCounts.demoed > 0 ? 
-                (statusCounts.admitted / (statusCounts.demoed + statusCounts.admitted) * 100).toFixed(2) : 0
+                (statusCounts.admitted / statusCounts.demoed * 100).toFixed(2) : 0
         };
 
+        // Enhanced response with metadata
         res.json({
+            success: true,
+            generatedAt: new Date().toISOString(),
             totalLeads,
             statusBreakdown: statusCounts,
             conversionRates: conversions,
-            filters: {from, to, source}
+            filters: {from, to, source},
+            insights: {
+                topPerformingStage: Object.keys(statusCounts).reduce((a, b) => 
+                    statusCounts[a] > statusCounts[b] ? a : b),
+                overallConversionRate: totalLeads > 0 ? 
+                    ((statusCounts.admitted / totalLeads) * 100).toFixed(2) : 0
+            }
         });
 
     } catch (error){
-        res.status(500).json({error: error.message});    
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            generatedAt: new Date().toISOString()
+        });    
     }
 });
 
