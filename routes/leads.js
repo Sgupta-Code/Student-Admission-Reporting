@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Lead = require('../models/Lead');
+const { validateLead } = require('../middleware/validation');
 
 // create a new lead
-router.post('/', async (req, res) =>{
+router.post('/', validateLead, async (req, res) => {
     try{
         const lead = new Lead(req.body);
         await lead.save();
